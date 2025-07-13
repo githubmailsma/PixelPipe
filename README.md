@@ -1,6 +1,27 @@
 # 🎨 PixelPipe: The ANSI Art Image Portal
 
+[![Python application](https://github.com/yourusername/PixelPipe/workflows/Python%20application/badge.svg)](https://github.com/yourusername/PixelPipe/actions)
+[![codecov](https://codecov.io/gh/yourusername/PixelPipe/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/PixelPipe)
+[![Code Coverage](https://img.shields.io/badge/Coverage-View%20Report-blue)](https://github.com/yourusername/PixelPipe/actions)
+
 Welcome to **PixelPipe**, the ultimate nerdy playground for turning your favorite images into dazzling ANSI art and browsing them in style! Whether you’re a retro terminal junkie, a digital artist, or just someone who loves pixel magic, PixelPipe is here to convert, animate, and showcase your images in glorious colored text.
+
+---
+
+## 🧪 Testing & Coverage
+
+PixelPipe includes comprehensive test coverage:
+
+- **Unit Tests**: Core functionality testing
+- **Integration Tests**: API endpoint testing  
+- **Coverage Reports**: Available in GitHub Actions artifacts
+- **Continuous Integration**: Automated testing on every commit
+
+View the latest coverage report by:
+1. Go to [Actions](https://github.com/yourusername/PixelPipe/actions)
+2. Click on the latest workflow run
+3. Download the "coverage-report" artifact
+4. Open `htmlcov/index.html` in your browser
 
 ---
 
