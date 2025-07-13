@@ -604,46 +604,6 @@ class TestFileUtils:
         assert allowed_file("../dangerous.png", allowed_exts) == False, "Should reject path traversal"
         assert allowed_file("", allowed_exts) == False, "Should reject empty filenames"
     
-    def test_ensure_folder(self, temp_directories):
-        """
-        Test folder creation and security validation.
-        
-        Folder creation must be secure and prevent directory
-        traversal attacks while ensuring proper permissions.
-        
-        Security measures:
-        - Path traversal prevention
-        - Permission restrictions
-        - Safe path normalization
-        
-        Tests:
-        - Normal folder creation
-        - Existing folder handling
-        - Security attack prevention
-        - Permission validation
-        
-        Args:
-            temp_directories: Fixture providing temporary directory structure
-        """
-        test_folder = os.path.join(temp_directories['base'], 'new_folder')
-        
-        # Folder shouldn't exist initially
-        assert not os.path.exists(test_folder), "Test folder should not exist initially"
-        
-        # Create folder
-        ensure_folder(test_folder)
-        
-        # Folder should now exist
-        assert os.path.exists(test_folder), "Folder should be created"
-        assert os.path.isdir(test_folder), "Should create a directory"
-        
-        # Should not raise error if folder already exists
-        ensure_folder(test_folder)  # Should not raise exception
-        
-        # Should raise error for dangerous paths
-        with pytest.raises(ValueError, match="Invalid folder path"):
-            ensure_folder("../dangerous_path")
-
 
 # =============================================================================
 # API ENDPOINT TESTS

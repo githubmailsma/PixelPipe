@@ -81,3 +81,4 @@ pip-delete-this-directory.txt
 
 # Ignore your own gitignore!
 !.gitignore
+*/__pycache__/*
