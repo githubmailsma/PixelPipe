@@ -1,0 +1,13 @@
+Flask==2.3.3
+Pillow==10.0.1
+requests==2.31.0
+Werkzeug==2.3.7
+
+# Testing dependencies
+pytest==7.4.2
+pytest-flask==1.2.0
+pytest-cov==4.1.0
+
+# Development dependencies (optional)
+black==23.7.0
+flake8==6.0.0
