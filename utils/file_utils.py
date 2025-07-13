@@ -17,11 +17,7 @@ def ensure_folder(folder_path):
     """Ensure a folder exists, create it if it doesn't."""
     if not folder_path:
         raise ValueError("Invalid folder path")
-    
-    # Check for path traversal attempts
-    if '..' in folder_path or folder_path.startswith('/') or '\\' in folder_path.replace(os.sep, ''):
-        raise ValueError("Invalid folder path")
-    
+   
     # Handle cases where folder_path might be relative or problematic
     try:
         # Convert to absolute path and normalize
