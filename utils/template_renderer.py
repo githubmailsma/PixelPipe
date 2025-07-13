@@ -1,3 +1,10 @@
+"""
+Template rendering utilities for PixelPipe.
+
+This module provides simple template rendering functionality
+for generating HTML files with dynamic content.
+"""
+
 import os
 import re
 
@@ -7,16 +14,38 @@ def escape_js_string(text):
     """
     return text.replace('\\', '\\\\').replace('`', '\\`').replace('${', '\\${')
 
+def _simple_template_engine(template_content, context):
+    """
+    Simple template engine for variable substitution.
+    
+    Replaces {{variable}} placeholders with values from context dictionary.
+    
+    Args:
+        template_content (str): Template string with {{variable}} placeholders
+        context (dict): Dictionary of variable names and values
+        
+    Returns:
+        str: Template with variables substituted
+    """
+    result = template_content
+    for key, value in context.items():
+        placeholder = f'{{{{{key}}}}}'
+        result = result.replace(placeholder, str(value))
+    return result
+
 def render_template(template_path, context=None):
     """
-    Simple template renderer that replaces {{key}} placeholders with values from context.
+    Render a template file with the given context.
     
     Args:
         template_path (str): Path to the template file
-        context (dict): Dictionary containing values to replace in the template
-    
+        context (dict): Dictionary of variables to substitute
+        
     Returns:
-        str: Rendered template as a string
+        str: Rendered template content
+        
+    Raises:
+        FileNotFoundError: If template file doesn't exist
     """
     if context is None:
         context = {}
@@ -29,9 +58,4 @@ def render_template(template_path, context=None):
     if 'ansi_art' in context:
         context['ansi_art'] = escape_js_string(context['ansi_art'])
     
-    # Replace {{key}} placeholders
-    for key, value in context.items():
-        placeholder = '{{' + key + '}}'
-        template_content = template_content.replace(placeholder, str(value))
-    
-    return template_content
+    return _simple_template_engine(template_content, context)

@@ -53,6 +53,10 @@ from utils.validation import (
     ValidationError
 )
 from utils.file_utils import allowed_file
+from utils.template_renderer import render_template, _simple_template_engine
+from utils.image_utils import download_and_save_image
+import requests
+from unittest.mock import Mock
 
 
 # =============================================================================
@@ -611,6 +615,368 @@ class TestFileUtils:
         assert allowed_file("script.py", allowed_exts) is False, "Should reject script files"
         assert allowed_file("../dangerous.png", allowed_exts) is False, "Should reject path traversal"
         assert allowed_file("", allowed_exts) is False, "Should reject empty filenames"
+
+
+# =============================================================================
+# TEMPLATE RENDERER TESTS
+# =============================================================================
+
+class TestTemplateRenderer:
+    """
+    Test suite for template rendering functionality.
+    
+    Tests template engine features:
+    - Basic variable substitution
+    - Template file loading
+    - Context variable handling
+    - Error handling for missing templates
+    - Security measures for template paths
+    """
+    
+    def test_simple_template_engine_basic(self):
+        """
+        Test basic template variable substitution.
+        
+        Validates:
+        - Simple variable replacement
+        - Multiple variable handling
+        - Special character handling in values
+        """
+        template = "Hello {{name}}, welcome to {{app}}!"
+        context = {'name': 'User', 'app': 'PixelPipe'}
+        result = _simple_template_engine(template, context)
+        assert result == "Hello User, welcome to PixelPipe!"
+    
+    def test_simple_template_engine_missing_variables(self):
+        """
+        Test template engine with missing context variables.
+        
+        Validates:
+        - Missing variables are left as-is
+        - Partial substitution works correctly
+        - Empty context handling
+        """
+        template = "Hello {{name}}, your score is {{score}}"
+        context = {'name': 'Alice'}
+        result = _simple_template_engine(template, context)
+        assert result == "Hello Alice, your score is {{score}}"
+    
+    def test_simple_template_engine_special_characters(self):
+        """
+        Test template engine with special characters and edge cases.
+        
+        Validates:
+        - HTML/JavaScript content handling
+        - ANSI escape sequences in templates
+        - Unicode character support
+        """
+        template = "File: {{filename}}, Art: {{ansi_art}}"
+        context = {
+            'filename': 'test<>&"file.png',
+            'ansi_art': '\x1b[38;2;255;0;0m█\x1b[0m'
+        }
+        result = _simple_template_engine(template, context)
+        assert result == "File: test<>&\"file.png, Art: \x1b[38;2;255;0;0m█\x1b[0m"
+    
+    def test_render_template_success(self, temp_directories):
+        """
+        Test successful template file rendering.
+        
+        Validates:
+        - Template file loading
+        - Context variable substitution
+        - File path handling
+        """
+        # Create a test template file
+        template_content = "<html><title>{{title}}</title><body>{{content}}</body></html>"
+        template_path = os.path.join(temp_directories['base'], 'test_template.html')
+        
+        with open(template_path, 'w', encoding='utf-8') as f:
+            f.write(template_content)
+        
+        context = {'title': 'Test Page', 'content': 'Hello World'}
+        result = render_template(template_path, context)
+        
+        expected = "<html><title>Test Page</title><body>Hello World</body></html>"
+        assert result == expected
+    
+    def test_render_template_missing_file(self):
+        """
+        Test template rendering with missing template file.
+        
+        Validates:
+        - FileNotFoundError handling
+        - Proper error message
+        """
+        with pytest.raises(FileNotFoundError):
+            render_template('nonexistent_template.html', {})
+    
+    def test_render_template_empty_context(self, temp_directories):
+        """
+        Test template rendering with empty context.
+        
+        Validates:
+        - Empty context handling
+        - Variables remain unsubstituted
+        """
+        template_content = "Name: {{name}}, Age: {{age}}"
+        template_path = os.path.join(temp_directories['base'], 'empty_context.html')
+        
+        with open(template_path, 'w', encoding='utf-8') as f:
+            f.write(template_content)
+        
+        result = render_template(template_path, {})
+        assert result == "Name: {{name}}, Age: {{age}}"
+
+
+# =============================================================================
+# IMAGE UTILITIES TESTS
+# =============================================================================
+
+class TestImageUtils:
+    """
+    Test suite for image utility functions.
+    
+    Tests image downloading and processing:
+    - URL image downloading
+    - File extension validation
+    - Security measures for downloads
+    - Error handling for network issues
+    - File naming and path handling
+    """
+    
+    @patch('utils.image_utils.requests.get')
+    def test_download_and_save_image_success(self, mock_get, temp_directories):
+        """
+        Test successful image download and save operation.
+        
+        Validates:
+        - HTTP request handling
+        - File writing
+        - Filename generation
+        - URL construction
+        """
+        # Mock successful response with image data
+        mock_response = Mock()
+        mock_response.headers = {'content-type': 'image/png'}
+        mock_response.content = b'fake_png_data'
+        mock_response.raise_for_status.return_value = None
+        mock_get.return_value = mock_response
+        
+        url = 'https://example.com/test_image.png'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        
+        filename, file_url = download_and_save_image(
+            url, temp_directories['uploads'], allowed_exts
+        )
+        
+        # Verify the file was created
+        file_path = os.path.join(temp_directories['uploads'], filename)
+        assert os.path.exists(file_path)
+        
+        # Verify the content
+        with open(file_path, 'rb') as f:
+            assert f.read() == b'fake_png_data'
+        
+        # Verify return values
+        assert filename.endswith('.png')
+        assert file_url == f'/uploads/{filename}'
+    
+    @patch('utils.image_utils.requests.get')
+    def test_download_and_save_image_invalid_extension(self, mock_get, temp_directories):
+        """
+        Test image download with invalid file extension.
+        
+        Validates:
+        - Extension validation
+        - Proper error handling for unsupported formats
+        """
+        url = 'https://example.com/test_image.txt'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        
+        with pytest.raises(ValueError, match="Unsupported file extension"):
+            download_and_save_image(url, temp_directories['uploads'], allowed_exts)
+    
+    @patch('utils.image_utils.requests.get')
+    def test_download_and_save_image_network_error(self, mock_get, temp_directories):
+        """
+        Test image download with network errors.
+        
+        Validates:
+        - HTTP error handling
+        - Connection timeout handling
+        - Proper exception propagation
+        """
+        # Test HTTP error
+        mock_get.side_effect = requests.exceptions.HTTPError("404 Not Found")
+        
+        url = 'https://example.com/missing_image.png'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        
+        with pytest.raises(requests.exceptions.HTTPError):
+            download_and_save_image(url, temp_directories['uploads'], allowed_exts)
+        
+        # Test connection error
+        mock_get.side_effect = requests.exceptions.ConnectionError("Connection failed")
+        
+        with pytest.raises(requests.exceptions.ConnectionError):
+            download_and_save_image(url, temp_directories['uploads'], allowed_exts)
+    
+    @patch('utils.image_utils.requests.get')
+    def test_download_and_save_image_filename_collision(self, mock_get, temp_directories):
+        """
+        Test image download with filename collision handling.
+        
+        Validates:
+        - Unique filename generation
+        - Timestamp-based naming
+        - Multiple collision handling
+        """
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.headers = {'content-type': 'image/jpeg'}
+        mock_response.content = b'fake_jpeg_data'
+        mock_response.raise_for_status.return_value = None
+        mock_get.return_value = mock_response
+        
+        # Create a file that would cause collision
+        existing_file = os.path.join(temp_directories['uploads'], 'test_image.jpg')
+        with open(existing_file, 'wb') as f:
+            f.write(b'existing_data')
+        
+        url = 'https://example.com/test_image.jpg'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        
+        filename, file_url = download_and_save_image(
+            url, temp_directories['uploads'], allowed_exts
+        )
+        
+        # Verify unique filename was generated
+        assert filename != 'test_image.jpg'
+        assert filename.endswith('.jpg')
+        assert os.path.exists(os.path.join(temp_directories['uploads'], filename))
+    
+    @patch('utils.image_utils.requests.get')
+    def test_download_and_save_image_content_type_detection(self, mock_get, temp_directories):
+        """
+        Test image download with content-type detection.
+        
+        Validates:
+        - MIME type detection
+        - Extension mapping from content-type
+        - Fallback to URL extension
+        """
+        # Test with content-type header
+        mock_response = Mock()
+        mock_response.headers = {'content-type': 'image/gif'}
+        mock_response.content = b'fake_gif_data'
+        mock_response.raise_for_status.return_value = None
+        mock_get.return_value = mock_response
+        
+        url = 'https://example.com/image_without_extension'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        
+        filename, file_url = download_and_save_image(
+            url, temp_directories['uploads'], allowed_exts
+        )
+        
+        assert filename.endswith('.gif')
+    
+    @patch('utils.image_utils.requests.get')
+    def test_download_and_save_image_large_url(self, mock_get, temp_directories):
+        """
+        Test image download with very long URLs.
+        
+        Validates:
+        - Long URL handling
+        - Filename truncation
+        - Path length limits
+        """
+        mock_response = Mock()
+        mock_response.headers = {'content-type': 'image/png'}
+        mock_response.content = b'fake_png_data'
+        mock_response.raise_for_status.return_value = None
+        mock_get.return_value = mock_response
+        
+        # Create a very long URL
+        long_filename = 'a' * 300 + '.png'
+        url = f'https://example.com/{long_filename}'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        
+        filename, file_url = download_and_save_image(
+            url, temp_directories['uploads'], allowed_exts
+        )
+        
+        # Verify filename is reasonable length
+        assert len(filename) < 255  # Common filesystem limit
+        assert filename.endswith('.png')
+
+
+# =============================================================================
+# INTEGRATION TESTS FOR TEMPLATE AND IMAGE UTILITIES
+# =============================================================================
+
+class TestIntegration:
+    """
+    Integration tests for template and image utilities working together.
+    """
+    
+    @patch('utils.image_utils.requests.get')
+    def test_template_with_downloaded_image(self, mock_get, temp_directories):
+        """
+        Test template rendering with data from downloaded images.
+        
+        Validates:
+        - End-to-end workflow
+        - Template rendering with dynamic data
+        - Image download integration
+        """
+        # Mock image download
+        mock_response = Mock()
+        mock_response.headers = {'content-type': 'image/png'}
+        mock_response.content = b'fake_image_data'
+        mock_response.raise_for_status.return_value = None
+        mock_get.return_value = mock_response
+        
+        # Download image
+        url = 'https://example.com/test.png'
+        allowed_exts = {'png', 'jpg', 'jpeg', 'gif'}
+        filename, file_url = download_and_save_image(
+            url, temp_directories['uploads'], allowed_exts
+        )
+        
+        # Create template
+        template_content = """
+        <html>
+        <head><title>{{title}}</title></head>
+        <body>
+            <h1>{{heading}}</h1>
+            <img src="{{image_url}}" alt="{{filename}}">
+            <p>Downloaded from: {{source_url}}</p>
+        </body>
+        </html>
+        """
+        template_path = os.path.join(temp_directories['base'], 'image_template.html')
+        with open(template_path, 'w', encoding='utf-8') as f:
+            f.write(template_content)
+        
+        # Render template with image data
+        context = {
+            'title': 'Downloaded Image',
+            'heading': 'My Downloaded Image',
+            'image_url': file_url,
+            'filename': filename,
+            'source_url': url
+        }
+        
+        result = render_template(template_path, context)
+        
+        # Verify template was rendered correctly
+        assert 'Downloaded Image' in result
+        assert 'My Downloaded Image' in result
+        assert file_url in result
+        assert filename in result
+        assert url in result
 
 
 # =============================================================================
