@@ -19,8 +19,16 @@ Usage:
 
 import pytest
 import os
+import sys
 import tempfile
+import shutil
+import json
 from unittest.mock import patch
+from PIL import Image
+
+# Add parent directory to Python path to import application modules
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 # Mock the upload folder for tests
 @pytest.fixture(autouse=True)
@@ -32,10 +40,6 @@ def setup_test_environment():
         
         with patch('server.UPLOAD_FOLDER', upload_dir):
             yield upload_dir
-
-
-# Add parent directory to Python path to import application modules
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Import the Flask app and modules to test
