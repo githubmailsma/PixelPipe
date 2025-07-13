@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PixelPipe - Art Display</title>
+    <script src="https://cdn.jsdelivr.net/npm/ansi_up@5.1.0/ansi_up.min.js"></script>
+    <link rel="stylesheet" href="/styles/imageBrowser.css">
+    <link rel="stylesheet" href="/styles/ansi_viewer.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="sidebar">
+        <button onclick="window.location.href='/'" title="Back to Gallery">🏠</button>
+        <button onclick="downloadAnsi()" title="Download ANSI File">💾</button>
+    </div>
+    <div class="controls">
+        <label>Brightness: <input type="range" id="brightness" min="0.5" max="3" step="0.1" value="1.0"><span id="brightness-value">1.0</span></label>
+        <br>
+        <label>Font size: <input type="range" id="fontsize" min="1" max="24" step="1" value="8"><span id="fontsize-value">8</span></label>
+        <br>
+        <label>Resolution: <input type="range" id="resolution" min="20" max="800" step="1" value="160"><span id="resolution-value">160</span></label>
+        <div class="effect-buttons">
+            Effects:
+            <span data-effect="-1" class="selected">None</span>
+            <span data-effect="0">Rainbow</span>
+            <span data-effect="1">Glitch</span>
+            <span data-effect="2">Matrix</span>
+            <span data-effect="3">Fire</span>
+            <span data-effect="4">Neon</span>
+        </div>
+    </div>
+    <div id="ansi-art-container">
+        <pre id="ansi-art"></pre>
+    </div>
+    <script src="/scripts/ansi_viewer.js"></script>
+    <script>
+        // Initialize with template data
+        const ansi_up = new AnsiUp();
+        let originalArt = `{{ansi_art}}`;
+        let imagePath = "{{image_path}}";
+        let filename = "{{filename}}";
+        let currentEffect = -1;
+        
+        initializeViewer();
+    </script>
+</body>
+</html>

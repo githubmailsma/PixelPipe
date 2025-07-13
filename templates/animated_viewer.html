@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PixelPipe - Animated ANSI</title>
+    <script src="https://cdn.jsdelivr.net/npm/ansi_up@5.1.0/ansi_up.min.js"></script>
+    <link rel="stylesheet" href="/styles/imageBrowser.css">
+    <link rel="stylesheet" href="/styles/ansi_viewer.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="sidebar">
+        <button onclick="window.location.href='/'" title="Back to Gallery">🏠</button>
+    </div>
+    <div class="controls">
+        <label>Brightness: <input type="range" id="brightness" min="0.5" max="3" step="0.1" value="1.0"><span id="brightness-value">1.0</span></label>
+        <br>
+        <label>Font size: <input type="range" id="fontsize" min="1" max="16" step="1" value="8"><span id="fontsize-value">8</span></label>
+        <div class="anim-buttons">
+            Animation:
+            <span data-anim="0" class="selected">Rainbow</span>
+            <span data-anim="1">Glitch</span>
+            <span data-anim="2">Matrix</span>
+            <span data-anim="3">Fire</span>
+            <span data-anim="4">Neon</span>
+        </div>
+    </div>
+    <div id="ansi-art-container">
+        <pre id="ansi-art"></pre>
+    </div>
+    
+    <script>
+        const ansi_up = new AnsiUp();
+        let arts = "{{animations}}";
+        let currentAnim = 0;
+        let imagePath = "{{image_path}}";
+        
+        function renderArt() {
+            document.getElementById('ansi-art').innerHTML = ansi_up.ansi_to_html(arts[currentAnim]);
+        }
+        
+        // Setup basic event listeners
+        document.getElementById('fontsize').addEventListener('input', function(e) {
+            let size = e.target.value + 'px';
+            document.getElementById('fontsize-value').textContent = e.target.value;
+            document.getElementById('ansi-art-container').style.fontSize = size;
+        });
+        
+        document.querySelectorAll('.anim-buttons span').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.anim-buttons span').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                currentAnim = parseInt(this.getAttribute('data-anim'));
+                renderArt();
+            });
+        });
+        
+        // Initial render
+        renderArt();
+    </script>
+</body>
+</html>

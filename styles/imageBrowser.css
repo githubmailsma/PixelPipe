@@ -1,0 +1,424 @@
+/* Add to top of file */
+body {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+/* Update specific elements that need monospace for ANSI art */
+.upload-preview,
+#ansi-art,
+#ansi-art-container {
+    font-family: monospace;
+}
+
+/* Gallery */
+#gallery {
+    padding: 2rem;
+    text-align: center;
+    margin-left: 4rem;
+    margin-top: 0.5rem;
+    background: #1a1a1a;
+}
+
+#gallery h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.gallery-grid,.image-browser {
+    display: grid;
+    grid-template-columns: auto auto auto auto; /* Adjusted for more columns */
+    gap: 1.5rem;
+    padding: 1rem;
+    background: #1a1a1a;
+    width: calc(100% - 4rem); /* Account for sidebar margin */
+}
+
+.thumbnail {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: none;
+    margin: 0;
+}
+
+.thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.settings-content {
+    background: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 300px;
+    color: #ddd;  /* Add light gray text color */
+}
+
+.setting-item {
+    margin: 15px 0;
+    color: #fff;  /* Make labels white */
+}
+
+.setting-item label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.setting-item input[type="range"] {
+    flex: 1;
+}
+
+.setting-item input[type="checkbox"] {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.setting-item select {
+    flex: 1;
+    padding: 4px 8px;
+    background: #333;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.setting-item select:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.setting-item select option {
+    background: #333;
+    color: #fff;
+}
+
+.settings-content button {
+    margin: 5px;
+    padding: 5px 15px;
+    background: #333;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.settings-content button:hover {
+    background: #444;
+}
+
+/* Add new styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 60px;
+    background: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+    z-index: 900;
+}
+
+.sidebar button {
+    width: 40px;
+    height: 40px;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 8px;
+    background: #333;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.sidebar button:hover {
+    background: #444;
+}
+
+.sidebar button.active {
+    background: #444;
+    border: 1px solid #666;
+}
+
+.upload-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.upload-content {
+    background: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 400px;
+}
+
+.upload-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.upload-method {
+    padding: 15px;
+    background: #333;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.upload-method:hover {
+    background: #444;
+}
+
+.upload-method h3 {
+    margin: 0 0 10px 0;
+    color: #fff;
+}
+
+.upload-method p {
+    margin: 0;
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.upload-controls {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.upload-controls button {
+    margin-left: 10px;
+}
+
+/* Add Help Modal styles */
+.help-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.help-content {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.help-content h2 {
+    color: #fff;
+    margin-top: 0;
+}
+
+.help-section {
+    margin: 20px 0;
+}
+
+.help-section h3 {
+    color: #4CAF50;
+    margin: 15px 0 10px 0;
+}
+
+.help-section ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #ddd;
+}
+
+.help-section li {
+    margin: 5px 0;
+}
+
+.help-content button {
+    display: block;
+    margin: 20px auto 0;
+    padding: 8px 20px;
+    background: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+.help-content button:hover {
+    background: #45a049;
+}
+
+/* Welcome Section */
+.welcome-section {
+    background: #1a1a1a;
+    padding: 2rem;
+    text-align: center;
+    margin-left: 4rem;
+}
+
+.welcome-section h1 {
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.upload-zone {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    padding: 2rem;
+    border: 2px dashed #4CAF50;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+}
+
+.upload-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.drop-area {
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #4CAF50;
+    cursor: pointer;
+}
+
+.url-input {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+.url-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    background: #333;
+    color: #fff;
+}
+
+.url-input button {
+    padding: 0.5rem 1rem;
+    background: #4CAF50;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+.quick-start {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    padding: 2rem;
+    background: #2a2a2a;
+    border-radius: 8px;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-around;
+    margin: 2rem 0;
+}
+
+.step {
+    color: #ddd;
+    font-size: 1.1rem;
+}
+
+/* Success Popup Styles */
+.upload-success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.success-content {
+    background: #2a2a2a;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+}
+
+.success-content h3 {
+    color: #4CAF50;
+    margin: 0 0 15px 0;
+}
+
+.preview-container {
+    margin: 15px 0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.upload-preview {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+}
+
+.success-content button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.success-content button:hover {
+    background: #45a049;
+    font-size: 14px;
+}
+
+.success-content button:hover {
+    background: #45a049;
+}

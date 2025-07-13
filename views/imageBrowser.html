@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANSI Art Image Browser</title>
+    <link rel="stylesheet" href="/styles/imageBrowser.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <div class="sidebar">
+            <button onclick="openUploadModal()" title="Upload">📤</button>
+            <button onclick="openSettings()" title="Settings">⚙️</button>
+            <button onclick="openHelp()" title="Help">❔</button>
+        </div>
+        <div class="welcome-section">
+            <h1>PixelPipe: Turn Your Images Into ANSI Art</h1>
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-options">
+                    <div class="drop-area" id="drop-area">Drop an image here or click to browse</div>
+                    <div class="url-input">
+                        <input type="text" placeholder="...or paste an image URL here">
+                        <button>Add URL</button>
+                    </div>
+                </div>
+            </div>
+            <div class="quick-start" id="quickStart">
+                <h2>Quick Start Guide</h2>
+                <div class="steps">
+                    <div class="step">1. Drop Image or Paste URL</div>
+                    <div class="step">2. Adjust Settings if needed</div>
+                    <div class="step">3. Get ANSI Art</div>
+                </div>
+                <button onclick="hideQuickStart()">Got it! Don't show again</button>
+            </div>
+        </div>
+        <div id="gallery">
+            <h2>Image Gallery</h2>
+            <div class="gallery-grid"></div>
+        </div>
+    </div>
+    <script src="/scripts/imageBrowser.js"></script>
+    <script>
+        // Initialize the UI
+        document.querySelector('.gallery-grid').appendChild(createImageBrowser());
+        
+        // Show/hide quick start based on user preference
+        if (localStorage.getItem('hideQuickStart') === 'true') {
+            document.getElementById('quickStart').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
