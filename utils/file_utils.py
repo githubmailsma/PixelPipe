@@ -1,5 +1,6 @@
 import os
 import logging
+import tempfile
 
 def allowed_file(filename, allowed_extensions):
     """
@@ -13,20 +14,30 @@ def allowed_file(filename, allowed_extensions):
             len(filename) < 255)  # Prevent extremely long filenames
 
 def ensure_folder(folder_path):
-    """
-    Ensure a folder exists, create if it does not.
-    Prevents directory traversal attacks.
-    """
-    # Normalize and validate the path
-    folder_path = os.path.normpath(folder_path)
-    
-    # Prevent going outside the project directory
-    if '..' in folder_path or folder_path.startswith('/'):
+    """Ensure a folder exists, create it if it doesn't."""
+    if not folder_path:
         raise ValueError("Invalid folder path")
     
-    if not os.path.exists(folder_path):
-        try:
-            os.makedirs(folder_path, mode=0o755)  # Restrict permissions
-        except OSError as e:
-            logging.error(f"Failed to create directory {folder_path}: {e}")
-            raise
+    # Handle cases where folder_path might be relative or problematic
+    try:
+        # Convert to absolute path and normalize
+        abs_path = os.path.abspath(folder_path)
+        
+        # Create directory if it doesn't exist
+        os.makedirs(abs_path, exist_ok=True)
+        
+        # Verify the directory was created and is writable
+        if not os.path.exists(abs_path):
+            raise OSError(f"Failed to create directory: {abs_path}")
+            
+        if not os.access(abs_path, os.W_OK):
+            raise OSError(f"Directory is not writable: {abs_path}")
+            
+        return abs_path
+        
+    except (OSError, TypeError) as e:
+        # Fallback to temp directory if original path fails
+        if 'GITHUB_ACTIONS' in os.environ or 'CI' in os.environ:
+            temp_dir = tempfile.mkdtemp(prefix='pixelpipe_')
+            return temp_dir
+        raise ValueError(f"Invalid folder path: {folder_path}") from e

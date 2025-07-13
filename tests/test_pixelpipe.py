@@ -19,12 +19,20 @@ Usage:
 
 import pytest
 import os
-import sys
 import tempfile
-import shutil
-from PIL import Image
-import json
-from io import BytesIO
+from unittest.mock import patch
+
+# Mock the upload folder for tests
+@pytest.fixture(autouse=True)
+def setup_test_environment():
+    """Setup test environment with temporary directories."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        upload_dir = os.path.join(temp_dir, 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        with patch('server.UPLOAD_FOLDER', upload_dir):
+            yield upload_dir
+
 
 # Add parent directory to Python path to import application modules
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
