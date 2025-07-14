@@ -1,8 +1,8 @@
 # 🎨 PixelPipe: The ANSI Art Image Portal
 
-[![Python application](https://github.com/yourusername/PixelPipe/workflows/Python%20application/badge.svg)](https://github.com/yourusername/PixelPipe/actions)
-[![codecov](https://codecov.io/gh/yourusername/PixelPipe/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/PixelPipe)
-[![Code Coverage](https://img.shields.io/badge/Coverage-View%20Report-blue)](https://github.com/yourusername/PixelPipe/actions)
+[![Python application](https://github.com/githubmailsma/PixelPipe/workflows/Python%20application/badge.svg)](https://github.com/githubmailsma/PixelPipe/actions)
+[![codecov](https://codecov.io/gh/githubmailsma/PixelPipe/branch/main/graph/badge.svg)](https://codecov.io/gh/githubmailsma/PixelPipe)
+[![Code Coverage](https://img.shields.io/badge/Coverage-View%20Report-blue)](https://github.com/githubmailsma/PixelPipe/actions)
 
 Welcome to **PixelPipe**, the ultimate nerdy playground for turning your favorite images into dazzling ANSI art and browsing them in style! Whether you’re a retro terminal junkie, a digital artist, or just someone who loves pixel magic, PixelPipe is here to convert, animate, and showcase your images in glorious colored text.
 
@@ -18,7 +18,7 @@ PixelPipe includes comprehensive test coverage:
 - **Continuous Integration**: Automated testing on every commit
 
 View the latest coverage report by:
-1. Go to [Actions](https://github.com/yourusername/PixelPipe/actions)
+1. Go to [Actions](https://github.com/githubmailsma/PixelPipe/actions)
 2. Click on the latest workflow run
 3. Download the "coverage-report" artifact
 4. Open `htmlcov/index.html` in your browser
@@ -95,7 +95,7 @@ start.py        # CLI launcher
 
 1. **Clone the repo:**
    ```
-   git clone https://github.com/yourusername/pixelpipe.git
+   git clone https://github.com/githubmailsma/pixelpipe.git
    cd pixelpipe
    ```
 
@@ -144,10 +144,6 @@ MIT License. Free to use, hack, and share!
 
 Pull requests, bug reports, and feature ideas are welcome!  
 Open an issue or fork the repo and help make PixelPipe even cooler.
-
----
-
-**Pipe your pixels. ANSI-fy
 
 ## 🎨 Image Credits
 
